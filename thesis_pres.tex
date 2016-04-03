@@ -6,6 +6,18 @@
 \usepackage{circuitikz}
 \usepackage{hyperref}
 \usepackage{adjustbox} 
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzstyle{mynode} = [rectangle, minimum width=2cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{blanknode} = [rectangle, maximum width=0cm, minimum height=0cm, draw=white]
+\tikzstyle{startstop} = [rectangle, minimum width=2cm, minimum height=1cm,text centered, draw=black]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+%\usetikzlibrary{arrows}
+%\usetikzlibrary{chains}
 \input{macros}
 
 \renewcommand<>{\item}[1]{\only#2{\beameroriginal{\item}{#1}}}
@@ -429,17 +441,17 @@
                         \item aka $W_1 = W_0 \oplus \Delta$.
                     \end{itemize}
                 \item Then an XOR gate can be computed by XORing the two input labels.
-            \begin{align*}
-                A_0 \oplus B_0 & = C_0 \\
-                A_0 \oplus B_1 & = A_0 \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
-                A_1 \oplus B_0 & = (A_0 \oplus \Delta) \oplus B_0 = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
-                A_1 \oplus B_1 & = (A_0 \oplus \Delta) \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) = C_0
-            \end{align*}
+                    \begin{align*}
+                        A_0 \oplus B_0 & = C_0 \\
+                        A_0 \oplus B_1 & = A_0 \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
+                        A_1 \oplus B_0 & = (A_0 \oplus \Delta) \oplus B_0 = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
+                        A_1 \oplus B_1 & = (A_0 \oplus \Delta) \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) = C_0
+                    \end{align*}
 
-            \item So XOR gates do not require a garbled table.
-            \item They are free
-            \item Secure? 
-        \end{itemize}
+                \item So XOR gates do not require a garbled table.
+                \item They are free
+                \item Secure? 
+            \end{itemize}
         \end{frame}
 
         \begin{frame}
@@ -522,7 +534,48 @@
                     \end{itemize}
             \end{itemize}
         \end{frame}
-        \end{document} 
+
+        \begin{frame}
+            \frametitle{Single Communcation Multiple Connections SCMC}
+            % http://tex.stackexchange.com/questions/201071/how-do-i-make-tikz-circular-arrowheads-concentric-to-the-point-they-connect
+            \begin{figure}
+                \begin{tikzpicture}
+                    [
+                        square/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt},
+                        empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
+                    ]
+
+                        \node[empty] (0a) at (0,0.5)     {};
+                        \node[empty] (0b) at (0,-0.5)     {};
+                        \node[square] (0c) at (0,0)     {$\GC_0$};
+
+                        \node (mida) at (3.5cm,0.5)     {};
+                        \node (midb) at (3.5cm,-0.5)     {};
+                        \node (midc) at (3.5cm,0)     {};
+
+                        \node[empty] (1a) at (7cm,0.5)   {};
+                        \node[empty] (1b) at (7cm,-0.5)   {};
+                        \node[square] (1c) at (7cm,0)   {$\GC_1$};
+
+                        \node (x0) at (1.85cm,0.7) {$A \oplus H(1)$};
+                        \node (y0) at (1.85cm,-0.3) {$A \oplus H(3)$};
+                        \node (z0) at (1.85cm,0.2) {$A \oplus H(2)$};
+
+                        \node (x1) at (4.85cm,0.7) {$B \oplus H(1)$};
+                        \node (y1) at (4.85cm,-0.3) {$B \oplus H(3)$};
+                        \node (z1) at (4.85cm,0.2) {$B \oplus H(2)$};
+
+                        \draw [-latex] (0a.east) -- (mida);
+                        \draw [-latex] (0b.east) -- (midb);
+                        \draw [-latex] (0c.east) -- (midc);
+
+                        \draw [-latex] (mida) -- (1a.west);
+                        \draw [-latex] (midb) -- (1b.west);
+                        \draw [-latex] (midc) -- (1c.west);
+                    \end{tikzpicture}
+                \end{figure}
+            \end{frame}
+            \end{document} 
 
 
 
