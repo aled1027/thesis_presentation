@@ -8,16 +8,6 @@
 \usepackage{adjustbox} 
 \usetikzlibrary{shapes.geometric, arrows}
 
-\tikzstyle{mynode} = [rectangle, minimum width=2cm, minimum height=1cm,text centered, draw=black]
-\tikzstyle{blanknode} = [rectangle, maximum width=0cm, minimum height=0cm, draw=white]
-\tikzstyle{startstop} = [rectangle, minimum width=2cm, minimum height=1cm,text centered, draw=black]
-\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
-\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, text width=3cm, draw=black, fill=orange!30]
-\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
-\tikzstyle{arrow} = [thick,->,>=stealth]
-
-%\usetikzlibrary{arrows}
-%\usetikzlibrary{chains}
 \input{macros}
 
 \renewcommand<>{\item}[1]{\only#2{\beameroriginal{\item}{#1}}}
@@ -157,6 +147,29 @@
         \end{frame}
 
         \begin{frame}
+            \frametitle{Oblivious Transfer (OT) in brief}
+            \begin{itemize}
+                \item Alice potentially sends either $m_0$ or $m_1$ to Bob.
+                \item Bob receives $m_b$.
+                \item Property 1: Alice does not know which message Bob recieved.
+                \item Property 2: Bob doesn't anything about $m_{1-b}$.
+            \end{itemize}
+
+            \begin{figure}
+                \includegraphics[scale=0.6]{images/ot}
+            \end{figure}
+        \end{frame}
+
+        \begin{frame}
+            \frametitle{Hash Function in brief}
+            \begin{itemize}
+                \item Hash function $H: \{0,1\}^* \to \{0,1\}^{128}$
+                \item For our purposes, $H$ maps any string to a uniform, random 128-bit string.
+                \item A.k.a. $H$ is a random oracle.
+            \end{itemize}
+        \end{frame}
+
+        \begin{frame}
             \frametitle{Roadmap of Garbled Circuits}
             \begin{enumerate}
                     %\item I show how to securely compute a single gate.
@@ -170,7 +183,6 @@
             \end{enumerate}
 
             \begin{figure}
-                \centering
                 \includegraphics[scale=0.4]{images/high_level}
             \end{figure}
         \end{frame}
@@ -266,6 +278,7 @@
                     \begin{itemize}
                         \item The wire labels corresponding to her inputs.
                     \end{itemize}
+                \item Bob has:
             \end{itemize}
 
             \begin{table}
@@ -284,8 +297,8 @@
                     \hline
                     Input Labels \\
                     \hline
-                    $A_a$ \\
-                    $B_b$ \\
+                    $A_*$ \\
+                    $B_*$ \\
                     \hline
                 \end{tabular}
             \end{table}
@@ -298,6 +311,7 @@
                 \item Bob has the garbled table, $A_{x_a}$ and $B_{x_b}$.
                 \item Bob trial decrypts each row of the garbled table, until an encrytion succeeds.
                 \item Bob acquires $C_{a \wedge b}$.
+                \item Bob has:
             \end{itemize}
             \begin{table}
                 \begin{tabular}{|c|}
@@ -315,8 +329,8 @@
                     \hline
                     Input Labels \\
                     \hline
-                    $A_a$ \\
-                    $B_b$ \\
+                    $A_*$ \\
+                    $B_*$ \\
                     \hline
                 \end{tabular}
                 \qquad
@@ -416,11 +430,17 @@
                 \item Alice only sends output maps for the final gates.
             \end{itemize}
             \begin{figure}
-                \centering
                 \includegraphics[scale=0.6]{images/less_than}
+                %\includegraphics[scale=0.4]{images/high_level}
             \end{figure}
         \end{frame}
 
+        \begin{frame}
+            \frametitle{The Garbled Circuit Protocol}
+            \begin{figure}
+                \includegraphics[scale=0.8]{images/high_level}
+            \end{figure}
+        \end{frame}
         \begin{frame}
             \frametitle{The cost of garbled circuits}
             \begin{itemize}
@@ -439,8 +459,10 @@
                 \item Let $W_0 \oplus W_1 = \Delta$ for all wires.
                     \begin{itemize}
                         \item aka $W_1 = W_0 \oplus \Delta$.
+                        \item We now say that $W_0 = W$.
                     \end{itemize}
                 \item Then an XOR gate can be computed by XORing the two input labels.
+                \item TODO fix this notation to not use subscripts
                     \begin{align*}
                         A_0 \oplus B_0 & = C_0 \\
                         A_0 \oplus B_1 & = A_0 \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
@@ -455,21 +477,22 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Introducing Online/Offline}
+            \frametitle{Offline/Online}
+            \small
             \begin{itemize}
                 \item Imagine two banks use secure computation during their daily operations
-                \item At night - the offline phase - they exchanged garbled circuits (the garbled tables)
-                \item During the day - the online phase - they exchnage input wire labels and use the pre-exchanged garbled circuits.
-                \item This is better for the banks, as the computation performs faster and isn't a burden on them.
-                \item Pitfalls
+                \item At night - the offline phase - they exchange garbled circuits (the garbled tables)
+                \item During the day - the online phase - they exchange input wire labels and use the pre-exchanged garbled circuits.
+                \item Problems
                     \begin{itemize}
                         \item Functions are decided at night - no room for flexibility
                         \item Input size is fixed at night 
-                            \begin{itemize}
-                                \item rectifiable if the input is padded, but that's inefficient and annoying
-                            \end{itemize}
                     \end{itemize}
             \end{itemize}
+
+            \begin{figure}
+                \includegraphics[scale=0.4]{images/high_level}
+            \end{figure}
         \end{frame}
 
         \begin{frame}
@@ -485,21 +508,91 @@
                     \begin{itemize}
                         \item Take the output of one garbled circuit and plug it into another garbled circuit
                     \end{itemize}
-                \item ADD IMAGE
             \end{itemize}
+            \begin{figure}
+                \scalebox{0.75}{
+                    \begin{tikzpicture}
+                        [
+                            square/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt},
+                            empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
+                        ]
+
+                        \node[empty] (0a) at (0,0.5)     {};
+                        \node[empty] (0b) at (0,-0.5)     {};
+                        \node[square] (0c) at (0,0)     {$\GC_0$};
+
+                        \node[empty] (1a) at (5cm,0.5)   {};
+                        \node[empty] (1b) at (5cm,-0.5)   {};
+                        \node[square] (1c) at (5cm,0)   {$\GC_1$};
+
+                        \node[empty] (2a) at (10cm,0.5)   {};
+                        \node[empty] (2b) at (10cm,-0.5)   {};
+                        \node[square] (2c) at (10cm,0)   {$\GC_2$};
+
+                        \draw [-latex] (0a.east) -- (1a.west);
+                        \draw [-latex] (0b.east) -- (1b.west);
+                        \draw [-latex] (0c.east) -- (1c.west);
+
+                        \draw [-latex] (1a.east) -- (2a.west);
+                        \draw [-latex] (1b.east) -- (2b.west);
+                        \draw [-latex] (1c.east) -- (2c.west);
+
+                    \end{tikzpicture}
+                }
+            \end{figure}
+
         \end{frame}
 
         \begin{frame}
             \frametitle{How to chain garbled circuits}
             \begin{itemize}
-                \item Suppose that we are chaining a garbled circuit with output wire $A$ to garbled circuit with input wire $B$.
-                \item We want $A_0 \to B_0$ and $A_0 \oplus \Delta \to B_0 \oplus \Delta$.
+                \item Suppose that we are chaining a garbled circuit with output wire $A$ to garbled circuit with input wire $X$.
+                \item We want $A \to B$ and $X \oplus \Delta \to X \oplus \Delta$.
                 \item Straightforward:
                     \begin{itemize}
-                        \item Alice sends Bob $\Gamma = A_0 \oplus B_0$
-                        \item Bob sets $B_*$ to  $A_* \oplus \Gamma$.
-                        \item TODO haven't introduced * star notation.
+                        \item Alice sends Bob {\color{blue}$W_{AB}$}$ = A \oplus B$
+                        \item Bob sets $B_* \gets A_* \oplus$ {\color{blue}$W_{AB}$}
                     \end{itemize}
+
+                    \begin{figure}
+                        \scalebox{0.75}{
+                            \begin{tikzpicture}
+                                [
+                                    square/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt},
+                                    empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
+                                ]
+
+                                \node[empty] (0a) at (0,0.5)     {};
+                                \node[empty] (0b) at (0,-0.5)     {};
+                                \node[square] (0c) at (0,0)     {$\GC_0$};
+
+                                \node[color=blue] (mida) at (4.8cm,0.5)   {$A \oplus X$};
+                                \node[color=blue] (midb) at (4.8cm,-0.5)  {$C \oplus Z$}; 
+                                \node[color=blue] (midc) at (4.8cm,0)     {$B \oplus Y$};
+
+                                \node[empty] (1a) at (10cm,0.5)   {};
+                                \node[empty] (1b) at (10cm,-0.5)   {};
+                                \node[square] (1c) at (10cm,0)   {$\GC_1$};
+
+                                \node (x0) at (2.2cm,0.7) {$A, A \oplus \Delta$};
+                                \node (y0) at (2.2cm,-0.3) {$C, C \oplus \Delta$};
+                                \node (z0) at (2.2cm,0.2) {$B, B \oplus \Delta$};
+
+                                \node (x1) at (7.2cm,0.7) {$X, X \oplus \Delta$};
+                                \node (y1) at (7.2cm,-0.3) {$Z, Z \oplus \Delta$};
+                                \node (z1) at (7.2cm,0.2) {$Y, Y \oplus \Delta$};
+
+                                \draw [-latex] (0a.east) -- (mida.west);
+                                \draw [-latex] (0b.east) -- (midb.west);
+                                \draw [-latex] (0c.east) -- (midc.west);
+
+                                \draw [-latex] (mida.east) -- (1a.west);
+                                \draw [-latex] (midb.east) -- (1b.west);
+                                \draw [-latex] (midc.east) -- (1c.west);
+                            \end{tikzpicture}
+                        }
+                    \end{figure}
+                    \pause
                 \item Is this secure? What does Bob learn?
                     \begin{itemize}
                         \item Not really anything.
@@ -510,34 +603,72 @@
         \begin{frame}
             \frametitle{Efficienty of chaining garbled circuits}
             \begin{itemize}
-                \item In online phase, communicate a ciphertext per chain
-                \item This can be a lot: 
+                \item In online phase, chaining requires communicating a ciphertext per chain
+                \item This can be a lot of communication
                     \begin{itemize}
                         \item Suppose $100$ by $100$ matrix with entries of max value $2^8$
-                        \item Then requires $256,000$ ciphertexts.
-                        \item This can be reduced to a single ciphertext.
+                        \item Then requires $256,000$ ciphertexts
+                        \item That's 4 megabytes!
                     \end{itemize}
+                \item We can reduce this chaining to a single ciphertext
             \end{itemize}
         \end{frame}
 
         \begin{frame}
-            \frametitle{Single Communcation Multiple Connections SCMC}
+            \frametitle{Single Communication Multiple Connections SCMC}
             \begin{itemize}
                 \item Problem: number of ciphertexts communicated scales linearly with the number of chains
                 \item Key observation: the chaining is predictable, consecutive wires are chained to consecutive wires
-                \item TODO SHOW EXAMPLE OF CONSECUTIVE WIRES
-                \item Solution: give consecutive wire labels a predictable pattern while maintaining the Free XOR condition
-                \item Set the $i$th wire label to $A \oplus H (T \oplus (i || b))$
-                    \begin{itemize}
-                        \item Where $H$ is a hash function
-                        \item TODO figure out what to do about hash function
-                    \end{itemize}
+                \item Solution: give consecutive wire labels a predictable pattern
             \end{itemize}
+
+            \begin{figure}
+                \scalebox{0.75}{
+                    \begin{tikzpicture}
+                        [
+                            square/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt},
+                            empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
+                        ]
+
+                        \node[empty] (0a) at (0,0.5)     {};
+                        \node[empty] (0b) at (0,-0.5)     {};
+                        \node[square] (0c) at (0,0)     {$\GC_0$};
+
+                        \node[empty] (1a) at (5cm,0.5)   {};
+                        \node[empty] (1b) at (5cm,-0.5)   {};
+                        \node[square] (1c) at (5cm,0)   {$\GC_1$};
+
+                        \node[empty] (2a) at (10cm,0.5)   {};
+                        \node[empty] (2b) at (10cm,-0.5)   {};
+                        \node[square] (2c) at (10cm,0)   {$\GC_2$};
+
+                        \draw [-latex] (0a.east) -- (1a.west);
+                        \draw [-latex] (0b.east) -- (1b.west);
+                        \draw [-latex] (0c.east) -- (1c.west);
+
+                        \draw [-latex] (1a.east) -- (2a.west);
+                        \draw [-latex] (1b.east) -- (2b.west);
+                        \draw [-latex] (1c.east) -- (2c.west);
+
+                    \end{tikzpicture}
+                }
+            \end{figure}
+
+
         \end{frame}
 
         \begin{frame}
             \frametitle{Single Communcation Multiple Connections SCMC}
             % http://tex.stackexchange.com/questions/201071/how-do-i-make-tikz-circular-arrowheads-concentric-to-the-point-they-connect
+            \begin{itemize}
+                \item Set $i$th input wire label of circuit to $A \oplus H(i)$.
+                \item Set $j$th output wire label of circuit to $X \oplus H(j)$.
+                    \begin{itemize}
+                        \item Technically, we the labels to $A \oplus H (T \oplus (i || b))$
+                        \item Where $H$ is a hash function or a random oracle
+                    \end{itemize}
+            \end{itemize}
+
             \begin{figure}
                 \begin{tikzpicture}
                     [
@@ -545,37 +676,51 @@
                         empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
                     ]
 
-                        \node[empty] (0a) at (0,0.5)     {};
-                        \node[empty] (0b) at (0,-0.5)     {};
-                        \node[square] (0c) at (0,0)     {$\GC_0$};
+                    \node[empty] (0a) at (0,0.5)     {};
+                    \node[empty] (0b) at (0,-0.5)     {};
+                    \node[square] (0c) at (0,0)     {$\GC_0$};
 
-                        \node (mida) at (3.5cm,0.5)     {};
-                        \node (midb) at (3.5cm,-0.5)     {};
-                        \node (midc) at (3.5cm,0)     {};
+                    \node (mida) at (3.5cm,0.5)     {};
+                    \node (midb) at (3.5cm,-0.5)     {};
+                    \node (midc) at (3.5cm,0)     {};
 
-                        \node[empty] (1a) at (7cm,0.5)   {};
-                        \node[empty] (1b) at (7cm,-0.5)   {};
-                        \node[square] (1c) at (7cm,0)   {$\GC_1$};
+                    \node[empty] (1a) at (7cm,0.5)   {};
+                    \node[empty] (1b) at (7cm,-0.5)   {};
+                    \node[square] (1c) at (7cm,0)   {$\GC_1$};
 
-                        \node (x0) at (1.85cm,0.7) {$A \oplus H(1)$};
-                        \node (y0) at (1.85cm,-0.3) {$A \oplus H(3)$};
-                        \node (z0) at (1.85cm,0.2) {$A \oplus H(2)$};
+                    \node (x0) at (1.85cm,0.7) {$A \oplus H(1)$};
+                    \node (y0) at (1.85cm,-0.3) {$A \oplus H(3)$};
+                    \node (z0) at (1.85cm,0.2) {$A \oplus H(2)$};
 
-                        \node (x1) at (4.85cm,0.7) {$B \oplus H(1)$};
-                        \node (y1) at (4.85cm,-0.3) {$B \oplus H(3)$};
-                        \node (z1) at (4.85cm,0.2) {$B \oplus H(2)$};
+                    \node (x1) at (4.85cm,0.7) {$B \oplus H(1)$};
+                    \node (y1) at (4.85cm,-0.3) {$B \oplus H(3)$};
+                    \node (z1) at (4.85cm,0.2) {$B \oplus H(2)$};
 
-                        \draw [-latex] (0a.east) -- (mida);
-                        \draw [-latex] (0b.east) -- (midb);
-                        \draw [-latex] (0c.east) -- (midc);
+                    \draw [-latex] (0a.east) -- (mida);
+                    \draw [-latex] (0b.east) -- (midb);
+                    \draw [-latex] (0c.east) -- (midc);
 
-                        \draw [-latex] (mida) -- (1a.west);
-                        \draw [-latex] (midb) -- (1b.west);
-                        \draw [-latex] (midc) -- (1c.west);
-                    \end{tikzpicture}
-                \end{figure}
-            \end{frame}
-            \end{document} 
+                    \draw [-latex] (mida) -- (1a.west);
+                    \draw [-latex] (midb) -- (1b.west);
+                    \draw [-latex] (midc) -- (1c.west);
+                \end{tikzpicture}
+            \end{figure}
+        \end{frame}
+
+        \begin{frame}
+            \frametitle{My thesis work}
+            \begin{itemize}
+                \item I implemented naive chaining and SCMC in a system called \CompGC
+                \item Written in C
+                \item I started with JustGarble
+                    \begin{itemize}
+                        \item Garbled circuits and evaluated them
+                        \item The state of the art in speed
+                        \item A colleague added some features to make it faster.
+                    \end{itemize}
+            \end{itemize}
+        \end{frame}
+        \end{document} 
 
 
 
