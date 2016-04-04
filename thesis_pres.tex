@@ -601,14 +601,14 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Efficienty of chaining garbled circuits}
+            \frametitle{Efficiency of chaining garbled circuits}
             \begin{itemize}
                 \item In online phase, chaining requires communicating a ciphertext per chain
                 \item This can be a lot of communication
                     \begin{itemize}
                         \item Suppose $100$ by $100$ matrix with entries of max value $2^8$
-                        \item Then requires $256,000$ ciphertexts
-                        \item That's 4 megabytes!
+                        \item Then requires $8,000$ ciphertexts
+                        \item That's $256$ kBs.
                     \end{itemize}
                 \item We can reduce this chaining to a single ciphertext
             \end{itemize}
@@ -707,19 +707,19 @@
             \end{figure}
         \end{frame}
 
-        \begin{frame}
-            \frametitle{My thesis work}
-            \begin{itemize}
-                \item I implemented naive chaining and SCMC in a system called \CompGC
-                \item Written in C
-                \item I started with JustGarble
-                    \begin{itemize}
-                        \item Garbled circuits and evaluated them
-                        \item The state of the art in speed
-                        \item A colleague added some features to make it faster.
-                    \end{itemize}
-            \end{itemize}
-        \end{frame}
+        %\begin{frame}
+        %    \frametitle{My thesis work}
+        %    \begin{itemize}
+        %        \item I implemented naive chaining and SCMC in a system called \CompGC
+        %        \item Written in C
+        %        \item I started with JustGarble
+        %            \begin{itemize}
+        %                \item Garbled circuits and evaluated them
+        %                \item The state of the art in speed
+        %                \item A colleague added some features to make it faster.
+        %            \end{itemize}
+        %    \end{itemize}
+        %\end{frame}
         \end{document} 
 
 
