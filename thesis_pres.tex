@@ -116,7 +116,7 @@
                 \centering
                 \includegraphics[scale=0.25]{images/security}
             \end{figure}
-            A secure computation protocol is secure if Alice and Bob learn the same informatoin in the real world as the ideal world.
+            A secure computation protocol is secure if Alice and Bob learn the same informatoin in the real world as they would in ideal world.
         \end{frame}
 
         \begin{frame}
@@ -147,6 +147,12 @@
         \end{frame}
 
         \begin{frame}
+            \frametitle{Encryption}
+            \center
+            \includegraphics[scale=0.6]{images/encryption}
+        \end{frame}
+
+        \begin{frame}
             \frametitle{Oblivious Transfer (OT) in brief}
             \begin{itemize}
                 \item Alice potentially sends either $m_0$ or $m_1$ to Bob.
@@ -167,15 +173,16 @@
                 \item For our purposes, $H$ maps any string to a uniform, random 128-bit string.
                 \item A.k.a. $H$ is a random oracle.
             \end{itemize}
+            \begin{figure}
+            \center
+            \includegraphics[scale=0.5]{images/hash}
+            \end{figure}
+            % sha-1 is actually a 160 bit hash function
         \end{frame}
 
         \begin{frame}
             \frametitle{Roadmap of Garbled Circuits}
             \begin{enumerate}
-                    %\item I show how to securely compute a single gate.
-                    %    \begin{itemize}
-                    %        \item Then we compose many gates to securely compute a circuit.
-                    %    \end{itemize}
                 \item Suppose Alice and Bob are computing a circuit that is only the AND gate.
                 \item Alice \textit{garbles} the AND gate. 
                 \item Alice then sends \textit{garbled table} of the gate and some auxiliary information to Bob.
@@ -192,7 +199,7 @@
             Step 1. Assign \textit{wire labels} to each wire.
             \begin{itemize}
                 \item For each wire in the circuit, assign two random labels to each wire
-                \item Wire $A$ has wire labels $A_0$ and $A_1$.
+                \item Wire $A$ has two wire labels $A_0$ and $A_1$.
                 \item We say $A_0$ \textit{semantically represents} $0$, and $A_1$ \textit{semantically represents} $1$.
                 \item And $A_0$ and $A_1$ are sampled uniform randomly from $\{0,1\}^n$.
                     \begin{itemize}
@@ -273,8 +280,9 @@
             \frametitle{Garbling a gate 4}
             Step 4. Send input wire labels to Bob.
             \begin{itemize}
-                \item Suppose $x_a, x_b \in \{0,1\}$ are Alice's inputs.
-                \item Alice sends Bob $A_{x_a}$ and $B_{x_b}$
+                \item Suppose $x \in \{0,1\}$ is Alice's input, and $y \in \{0,1\}$ is Bob's input.
+                \item Alice sends $A_{x}$ to Bob.
+                \item Alice sends $B_{y}$ to Bob via Oblvious Transfer
                     \begin{itemize}
                         \item The wire labels corresponding to her inputs.
                     \end{itemize}
@@ -298,7 +306,7 @@
                     Input Labels \\
                     \hline
                     $A_*$ \\
-                    $B_*$ \\
+                    $B_y$ \\
                     \hline
                 \end{tabular}
             \end{table}
@@ -308,9 +316,9 @@
             \frametitle{Garbling a gate 5}
             Step 5. Bob evaluates the circuit
             \begin{itemize}
-                \item Bob has the garbled table, $A_{x_a}$ and $B_{x_b}$.
+                \item Bob has the garbled table, $A_{x}$ and $B_{y}$.
                 \item Bob trial decrypts each row of the garbled table, until an encrytion succeeds.
-                \item Bob acquires $C_{a \wedge b}$.
+                \item Bob acquires $C_{x \wedge y}$.
                 \item Bob has:
             \end{itemize}
             \begin{table}
@@ -338,7 +346,7 @@
                     \hline
                     Output Label \\
                     \hline 
-                    $C_{a \wedge b}$ \\
+                    $C_{x \wedge y}$ \\
                     \hline
                 \end{tabular}
             \end{table}
@@ -350,9 +358,9 @@
             Step 6. Bob gets a final answer.
             \begin{itemize}
                 \item Alice sends Bob $\Enc_{C_0}(0)$ and $\Enc_{C_1}(1)$.
-                \item Bob trial decrypts these with $C_{a \wedge b}$.
-                \item One will succeed, and Bob will acquire $c = a \wedge b$.
-                \item So Bob knows $c$, but not $a$ and $b$!
+                \item Bob trial decrypts these with $C_{x \wedge y}$.
+                \item One will succeed, and Bob will acquire $z = x \wedge y$.
+                \item So Bob knows $z$, but not $x$!
             \end{itemize}
 
             \begin{table}
@@ -420,6 +428,10 @@
                         \item Not really, because everything is encrypted.
                     \end{itemize}
             \end{itemize}
+            \begin{figure}
+                \center
+                \includegraphics[scale=0.15]{images/security}
+            \end{figure}
         \end{frame}
 
         \begin{frame}
@@ -461,17 +473,18 @@
                         \item aka $W_1 = W_0 \oplus \Delta$.
                         \item We now say that $W_0 = W$.
                     \end{itemize}
+                \item And set the output wire of a gate to be $A \oplus B$.
+                    \begin{itemize}
+                        \item The xor of its input wires.
+                    \end{itemize}
                 \item Then an XOR gate can be computed by XORing the two input labels.
-                \item TODO fix this notation to not use subscripts
                     \begin{align*}
-                        A_0 \oplus B_0 & = C_0 \\
-                        A_0 \oplus B_1 & = A_0 \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
-                        A_1 \oplus B_0 & = (A_0 \oplus \Delta) \oplus B_0 = (A_0 \oplus B_0) \oplus \Delta = C_1 \\
-                        A_1 \oplus B_1 & = (A_0 \oplus \Delta) \oplus (B_0 \oplus \Delta) = (A_0 \oplus B_0) = C_0
+                        A \oplus B & = C \\
+                        A \oplus B \oplus \Delta & = A \oplus B \oplus \Delta =  C \oplus \Delta \\
+                        A \oplus \Delta \oplus B & = A \oplus \Delta \oplus B = C \oplus \Delta \\
+                        A \oplus \Delta \oplus B \oplus \Delta& = A \oplus B =  C
                     \end{align*}
-
-                \item So XOR gates do not require a garbled table.
-                \item They are free
+                \item So XOR gates do not require a garbled table, aka Free.
                 \item Secure? 
             \end{itemize}
         \end{frame}
@@ -483,15 +496,16 @@
                 \item Imagine two banks use secure computation during their daily operations
                 \item At night - the offline phase - they exchange garbled circuits (the garbled tables)
                 \item During the day - the online phase - they exchange input wire labels and use the pre-exchanged garbled circuits.
+                \item The computation is fast!
                 \item Problems
                     \begin{itemize}
+                        \footnotesize
                         \item Functions are decided at night - no room for flexibility
                         \item Input size is fixed at night 
                     \end{itemize}
             \end{itemize}
-
             \begin{figure}
-                \includegraphics[scale=0.4]{images/high_level}
+                \includegraphics[scale=0.3]{images/high_level}
             \end{figure}
         \end{frame}
 
