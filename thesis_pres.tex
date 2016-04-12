@@ -19,8 +19,7 @@
         \setbeamertemplate{navigation symbols}{} 
     }
 
-    \title[Short title]{Secure Computation by Chaining Garbled Circuits:\\
-        Enabling two people who don't trust each to work together
+    \title[Short title]{Secure Computation: Chaining Garbled Circuits:\\
     } 
     \author{Alex Ledger} 
     \institute[Reed College]{
@@ -701,6 +700,7 @@
             \begin{itemize}
                 \item For each piece of data, sample a label $A$.
                 \item Set $i$th wire label of data to $A \oplus H(i)$.
+                \item Where $H$ is a hash function
             \end{itemize}
 
             \begin{figure}
@@ -741,7 +741,6 @@
             \end{figure}
             \begin{itemize}
                 \item Technically, we set the links to $A \oplus H (T \oplus (i || b))$
-                \item Where $H$ is a hash function
             \end{itemize}
         \end{frame}
 
@@ -764,7 +763,7 @@
             \frametitle{Conclusion}
             We talked about:
             \begin{itemize}
-                \item Secure computaiotn
+                \item Secure computation
                 \item Garbled circuits
                 \item Chaining garbled circuits
                 \item SCMC
