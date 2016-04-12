@@ -2,6 +2,7 @@
 %\documentclass[11pt, handout]{beamer}
 
 \usepackage{graphicx}
+\usepackage{xspace}
 \usepackage{tikz}
 \usepackage{circuitikz}
 \usepackage{hyperref}
@@ -18,7 +19,9 @@
         \setbeamertemplate{navigation symbols}{} 
     }
 
-    \title[Short title]{Chaining Garbled Circuits} 
+    \title[Short title]{Secure Computation by Chaining Garbled Circuits:\\
+        Enabling two people who don't trust each to work together
+    } 
     \author{Alex Ledger} 
     \institute[Reed College]{
         Reed College \\ 
@@ -36,14 +39,13 @@
         \begin{enumerate}
             \item Secure Computation
             \item Garbled Circuits
-            \item Better Garbled Circuits
             \item Chaining Garbled Circuits
-            \item Better Chaining of Garbled Circuits
+            \item My work: SCMC and Programming
         \end{enumerate}
     \end{frame}
 
     \begin{frame}
-        \frametitle{Goals of this talk}
+        \frametitle{Goals and Notes}
         \begin{enumerate}
             \item Understand the high level idea of secure computation
                 \begin{itemize}
@@ -51,13 +53,13 @@
                 \end{itemize}
             \item Understand garbled circuits - the most basic construction
             \item Understand chaining - how we (my thesis) made secure computation faster
-            \item We will not be focusing on security (different from most crypto talks)
         \end{enumerate}
         Before we start:
-        \begin{enumerate}
-            \item Lots of notation: ask me if I brush over something, or you forget what something means.
-            \item Lots of moving parts. 
-        \end{enumerate}
+        \begin{itemize}
+            \item I wil not emphasize security 
+            \item Lots of notation: ask me if I brush over something, or you forget what something means
+            \item Lots of moving parts 
+        \end{itemize}
     \end{frame}
 
     \begin{frame}
@@ -105,7 +107,7 @@
                     \end{itemize}
                 \item Semi-honest
                     \begin{itemize}
-                        \item We assume that each party obeys the protocol, but attemps to learn extra information from its  interactions
+                        \item We assume that each party obeys the protocol, but attemps to learn extra information from its interactions
                     \end{itemize}
             \end{itemize}
         \end{frame}
@@ -116,7 +118,7 @@
                 \centering
                 \includegraphics[scale=0.25]{images/security}
             \end{figure}
-            A secure computation protocol is secure if Alice and Bob learn the same informatoin in the real world as they would in ideal world.
+            A secure computation protocol is secure if Alice and Bob learn the same information in the real world as they would in ideal world.
         \end{frame}
 
         \begin{frame}
@@ -156,6 +158,7 @@
             \frametitle{Oblivious Transfer (OT) in brief}
             \begin{itemize}
                 \item Alice potentially sends either $m_0$ or $m_1$ to Bob.
+                \item Bob, without seeing $m_0$ or $m_1$, decides that he wants $m_b$.
                 \item Bob receives $m_b$.
                 \item Property 1: Alice does not know which message Bob recieved.
                 \item Property 2: Bob doesn't anything about $m_{1-b}$.
@@ -174,8 +177,8 @@
                 \item A.k.a. $H$ is a random oracle.
             \end{itemize}
             \begin{figure}
-            \center
-            \includegraphics[scale=0.5]{images/hash}
+                \center
+                \includegraphics[scale=0.5]{images/hash}
             \end{figure}
             % sha-1 is actually a 160 bit hash function
         \end{frame}
@@ -183,10 +186,9 @@
         \begin{frame}
             \frametitle{Roadmap of Garbled Circuits}
             \begin{enumerate}
-                \item Suppose Alice and Bob are computing a circuit that is only the AND gate.
-                \item Alice \textit{garbles} the AND gate. 
-                \item Alice then sends \textit{garbled table} of the gate and some auxiliary information to Bob.
-                \item Bob \textit{evaluates} the gate.
+                \item Alice (garbler) \textit{garbles} the AND gate. 
+                \item Alice sends the \textit{garbled table} of the gate and some keys to Bob.
+                \item Bob (evaluator) \textit{evaluates} the gate.
             \end{enumerate}
 
             \begin{figure}
@@ -196,7 +198,7 @@
 
         \begin{frame}
             \frametitle{Garbling a gate 1}
-            Step 1. Assign \textit{wire labels} to each wire.
+            Step 1. Alice assigns \textit{wire labels} to each wire.
             \begin{itemize}
                 \item For each wire in the circuit, assign two random labels to each wire
                 \item Wire $A$ has two wire labels $A_0$ and $A_1$.
@@ -208,7 +210,6 @@
             \end{itemize}
 
             \begin{figure}
-                \label{fig:thefig}
                 \centering
                 \begin{circuitikz} \draw
                     (0,2) node[and port] (myand1) {}
@@ -225,14 +226,13 @@
 
         \begin{frame}
             \frametitle{Garbling a gate 2}
-            Step 2. Construct garbled table.
+            Step 2. Alice constructs garbled table.
             \begin{itemize}
                 \item Encrypt wire labels for $C$, $C_0$ and $C_1$, using wire labels of $A$ and $B$.
                 \item Randomly permute table
             \end{itemize}
 
             \begin{figure}
-                \label{fig:thefig}
                 \centering
                 \begin{circuitikz} \draw
                     (0,2) node[and port] (myand1) {}
@@ -278,11 +278,11 @@
 
         \begin{frame}
             \frametitle{Garbling a gate 4}
-            Step 4. Send input wire labels to Bob.
+            Step 4. Alice sends input wire labels to Bob.
             \begin{itemize}
                 \item Suppose $x \in \{0,1\}$ is Alice's input, and $y \in \{0,1\}$ is Bob's input.
                 \item Alice sends $A_{x}$ to Bob.
-                \item Alice sends $B_{y}$ to Bob via Oblvious Transfer
+                \item Alice sends $B_{y}$ to Bob via Oblivious Transfer
                     \begin{itemize}
                         \item The wire labels corresponding to her inputs.
                     \end{itemize}
@@ -338,7 +338,7 @@
                     Input Labels \\
                     \hline
                     $A_*$ \\
-                    $B_*$ \\
+                    $B_y$ \\
                     \hline
                 \end{tabular}
                 \qquad
@@ -357,7 +357,7 @@
             \frametitle{Garbling a gate 6}
             Step 6. Bob gets a final answer.
             \begin{itemize}
-                \item Alice sends Bob $\Enc_{C_0}(0)$ and $\Enc_{C_1}(1)$.
+                \item Alice sends $\Enc_{C_0}(0)$ and $\Enc_{C_1}(1)$ to Bob.
                 \item Bob trial decrypts these with $C_{x \wedge y}$.
                 \item One will succeed, and Bob will acquire $z = x \wedge y$.
                 \item So Bob knows $z$, but not $x$!
@@ -380,8 +380,8 @@
                     \hline
                     Input Labels \\
                     \hline
-                    $A_a$ \\
-                    $B_b$ \\
+                    $A_*$ \\
+                    $B_y$ \\
                     \hline
                 \end{tabular}
                 \qquad
@@ -389,7 +389,7 @@
                     \hline
                     Output Label \\
                     \hline 
-                    $C_{a \wedge b}$ \\
+                    $C_{x \wedge y}$ \\
                     \hline
                 \end{tabular}
                 \qquad
@@ -456,7 +456,7 @@
         \begin{frame}
             \frametitle{The cost of garbled circuits}
             \begin{itemize}
-                \item Alice sends Bob $4$ ciphertexts per gate, since the garbled table has $4$ rows.
+                \item Alice sends $4$ ciphertexts per gate, since the garbled table has $4$ rows, to Bob.
                 \item This is the bandwidth, or the amount of the communication required.
                 \item Based on empirical work, bandwidth is the biggest bottleneck in garbled circuits.
                 \item So reducing the size of the garbled table is of utmost priority.
@@ -466,26 +466,28 @@
         \begin{frame}
             \frametitle{Reducing the size of the garbled table with Free XOR}
             \begin{itemize}
-                \item Most improvements to garbled circuits are about choosing wire labels intelligently.
+                    \small
                 \item Let $\Delta \gets \{0,1\}^n$ be fixed globally in a circuit.
-                \item Let $W_0 \oplus W_1 = \Delta$ for all wires.
+                \item For each input wire $A$, sample a single ciphertext; call it $A$.
                     \begin{itemize}
-                        \item aka $W_1 = W_0 \oplus \Delta$.
-                        \item We now say that $W_0 = W$.
+                            \footnotesize
+                        \item The \textit{zeroith} wire label is $A$.
+                        \item The \textit{first} wire label is $A \oplus \Delta$.
                     \end{itemize}
-                \item And set the output wire of a gate to be $A \oplus B$.
+                \item Set output wire $C$ of a gate to be $A \oplus B$.
                     \begin{itemize}
+                            \footnotesize
                         \item The xor of its input wires.
                     \end{itemize}
-                \item Then an XOR gate can be computed by XORing the two input labels.
+                \item Bob \textit{evaluates} the XOR gate by XORing the two input labels.
                     \begin{align*}
-                        A \oplus B & = C \\
-                        A \oplus B \oplus \Delta & = A \oplus B \oplus \Delta =  C \oplus \Delta \\
-                        A \oplus \Delta \oplus B & = A \oplus \Delta \oplus B = C \oplus \Delta \\
-                        A \oplus \Delta \oplus B \oplus \Delta& = A \oplus B =  C
+                        (A \oplus a\Delta) \oplus (B \oplus b\Delta) = A \oplus B \oplus (a \oplus b)\Delta
+                        %A \oplus B & = C \\
+                        %A \oplus (B \oplus \Delta) & = C \oplus \Delta \\
+                        %(A \oplus \Delta) \oplus B & = C \oplus \Delta \\
+                        %(A \oplus \Delta) \oplus (B \oplus \Delta) & = A \oplus B =  C
                     \end{align*}
-                \item So XOR gates do not require a garbled table, aka Free.
-                \item Secure? 
+                \item So XOR gates do not require a garbled table, aka they're Free.
             \end{itemize}
         \end{frame}
 
@@ -494,18 +496,38 @@
             \small
             \begin{itemize}
                 \item Imagine two banks use secure computation during their daily operations
+                    \begin{itemize}
+                            \footnotesize
+                        \item E.g. ATM operations
+                    \end{itemize}
                 \item At night - the offline phase - they exchange garbled circuits (the garbled tables)
+                    \begin{itemize}
+                            \footnotesize
+                        \item So garbled circuits are ATM transactions
+                    \end{itemize}
                 \item During the day - the online phase - they exchange input wire labels and use the pre-exchanged garbled circuits.
                 \item The computation is fast!
                 \item Problems
                     \begin{itemize}
-                        \footnotesize
+                            \footnotesize
                         \item Functions are decided at night - no room for flexibility
                         \item Input size is fixed at night 
                     \end{itemize}
             \end{itemize}
+
             \begin{figure}
-                \includegraphics[scale=0.3]{images/high_level}
+                \scalebox{0.75}{
+                    \begin{tikzpicture}
+                        [
+                            square/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt},
+                            empty/.style = {draw, shape=rectangle, minimum height=2cm, minimum width=2cm, node distance=2cm, line width=1pt, draw=white},
+                        ]
+
+                        \node[square] (0c) at (0,0)     {ATM Transaction};
+                        \node[square] (1c) at (5cm,0)   {Insurance Operation};
+                        \node[square] (2c) at (10cm,0)   {Stastical Operation};
+                    \end{tikzpicture}
+                }
             \end{figure}
         \end{frame}
 
@@ -513,10 +535,11 @@
             \frametitle{Chaining Garbled Circuits}
             \begin{itemize}
                 \item Goal: improve offline/online garbled circuits by adding flexibility
-                \item Key observation: many useful functions in the real world are constructed in a modular way
+                \item Key observation: many useful functions in the real world are composed of small, standard components.
                     \begin{itemize}
-                        \item They are composed of standard components
-                        \item E.g. addition, subtraction, matrix multiplication
+                        \item E.g. addition, subtraction, matrix operations
+                        \item Leveshtein distance algorithm - a dynamic algorithm
+                        \item Encryption is a common component (banks)
                     \end{itemize}
                 \item Idea: chain garbled circuits together
                     \begin{itemize}
@@ -533,15 +556,15 @@
 
                         \node[empty] (0a) at (0,0.5)     {};
                         \node[empty] (0b) at (0,-0.5)     {};
-                        \node[square] (0c) at (0,0)     {$\GC_0$};
+                        \node[square] (0c) at (0,0)     {$+$};
 
                         \node[empty] (1a) at (5cm,0.5)   {};
                         \node[empty] (1b) at (5cm,-0.5)   {};
-                        \node[square] (1c) at (5cm,0)   {$\GC_1$};
+                        \node[square] (1c) at (5cm,0)   {$\times$};
 
                         \node[empty] (2a) at (10cm,0.5)   {};
                         \node[empty] (2b) at (10cm,-0.5)   {};
-                        \node[square] (2c) at (10cm,0)   {$\GC_2$};
+                        \node[square] (2c) at (10cm,0)   {$\Enc$};
 
                         \draw [-latex] (0a.east) -- (1a.west);
                         \draw [-latex] (0b.east) -- (1b.west);
@@ -561,11 +584,11 @@
             \frametitle{How to chain garbled circuits}
             \begin{itemize}
                 \item Suppose that we are chaining a garbled circuit with output wire $A$ to garbled circuit with input wire $X$.
-                \item We want $A \to B$ and $X \oplus \Delta \to X \oplus \Delta$.
+                \item We want $A \to X$ and $X \oplus \Delta \to X \oplus \Delta$.
                 \item Straightforward:
                     \begin{itemize}
-                        \item Alice sends Bob {\color{blue}$W_{AB}$}$ = A \oplus B$
-                        \item Bob sets $B_* \gets A_* \oplus$ {\color{blue}$W_{AB}$}
+                        \item Alice sends Bob {\color{blue}$L_{AX}$}$ = A \oplus X$
+                        \item Bob sets $X_* \gets A_* \oplus$ {\color{blue}$L_{AX}$}
                     \end{itemize}
 
                     \begin{figure}
@@ -578,7 +601,7 @@
 
                                 \node[empty] (0a) at (0,0.5)     {};
                                 \node[empty] (0b) at (0,-0.5)     {};
-                                \node[square] (0c) at (0,0)     {$\GC_0$};
+                                \node[square] (0c) at (0,0)     {$+$};
 
                                 \node[color=blue] (mida) at (4.8cm,0.5)   {$A \oplus X$};
                                 \node[color=blue] (midb) at (4.8cm,-0.5)  {$C \oplus Z$}; 
@@ -586,7 +609,7 @@
 
                                 \node[empty] (1a) at (10cm,0.5)   {};
                                 \node[empty] (1b) at (10cm,-0.5)   {};
-                                \node[square] (1c) at (10cm,0)   {$\GC_1$};
+                                \node[square] (1c) at (10cm,0)   {$\Enc$};
 
                                 \node (x0) at (2.2cm,0.7) {$A, A \oplus \Delta$};
                                 \node (y0) at (2.2cm,-0.3) {$C, C \oplus \Delta$};
@@ -607,10 +630,7 @@
                         }
                     \end{figure}
                     \pause
-                \item Is this secure? What does Bob learn?
-                    \begin{itemize}
-                        \item Not really anything.
-                    \end{itemize}
+                \item Is this secure? 
             \end{itemize}
         \end{frame}
 
@@ -624,7 +644,7 @@
                         \item Then requires $8,000$ ciphertexts
                         \item That's $256$ kBs.
                     \end{itemize}
-                \item We can reduce this chaining to a single ciphertext
+                \item I came up with a method to reduce this to a single ciphertext per data object
             \end{itemize}
         \end{frame}
 
@@ -632,7 +652,11 @@
             \frametitle{Single Communication Multiple Connections SCMC}
             \begin{itemize}
                 \item Problem: number of ciphertexts communicated scales linearly with the number of chains
-                \item Key observation: the chaining is predictable, consecutive wires are chained to consecutive wires
+                \item Key observation: 
+                    \begin{itemize}
+                        \item the chaining is predictable, consecutive wires are chained to consecutive wires
+                        \item Pieces of data move around in a function, like matrices or numbers or text
+                    \end{itemize}
                 \item Solution: give consecutive wire labels a predictable pattern
             \end{itemize}
 
@@ -675,12 +699,8 @@
             \frametitle{Single Communcation Multiple Connections SCMC}
             % http://tex.stackexchange.com/questions/201071/how-do-i-make-tikz-circular-arrowheads-concentric-to-the-point-they-connect
             \begin{itemize}
-                \item Set $i$th input wire label of circuit to $A \oplus H(i)$.
-                \item Set $j$th output wire label of circuit to $X \oplus H(j)$.
-                    \begin{itemize}
-                        \item Technically, we the labels to $A \oplus H (T \oplus (i || b))$
-                        \item Where $H$ is a hash function or a random oracle
-                    \end{itemize}
+                \item For each piece of data, sample a label $A$.
+                \item Set $i$th wire label of data to $A \oplus H(i)$.
             \end{itemize}
 
             \begin{figure}
@@ -719,21 +739,47 @@
                     \draw [-latex] (midc) -- (1c.west);
                 \end{tikzpicture}
             \end{figure}
+            \begin{itemize}
+                \item Technically, we set the links to $A \oplus H (T \oplus (i || b))$
+                \item Where $H$ is a hash function
+            \end{itemize}
         \end{frame}
 
-        %\begin{frame}
-        %    \frametitle{My thesis work}
-        %    \begin{itemize}
-        %        \item I implemented naive chaining and SCMC in a system called \CompGC
-        %        \item Written in C
-        %        \item I started with JustGarble
-        %            \begin{itemize}
-        %                \item Garbled circuits and evaluated them
-        %                \item The state of the art in speed
-        %                \item A colleague added some features to make it faster.
-        %            \end{itemize}
-        %    \end{itemize}
-        %\end{frame}
+        \begin{frame}
+            \frametitle{My thesis work}
+            \begin{itemize}
+                \item I implemented chaining and SCMC in a program called \CompGC
+                \item Written in C
+                \item It does the entire garbled circuits protocol
+                \item Takes circuits and inputs and securely computed the output
+                \item It's fast
+                    \begin{itemize}
+                        \item Leventshein-60 with SCMC: $\approx$ 750 ms
+                        \item Without chaining: $\approx$ 10 s
+                    \end{itemize}
+            \end{itemize}
+        \end{frame}
+
+        \begin{frame}
+            \frametitle{Conclusion}
+            We talked about:
+            \begin{itemize}
+                \item Secure computaiotn
+                \item Garbled circuits
+                \item Chaining garbled circuits
+                \item SCMC
+                \item \CompGC
+            \end{itemize}
+
+            Thank you:
+
+            \begin{itemize}
+                \item Adam Groce
+                \item Alex Malozemoff and Arkady Yerukhimovich
+                \item Catdog and friends
+            \end{itemize}
+        \end{frame}
+
         \end{document} 
 
 
