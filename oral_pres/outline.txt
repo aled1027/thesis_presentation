@@ -1,0 +1,95 @@
+
+# Orals TODO
+- figure out if we used FleXOR
+- 2pc security definition
+    - why are (S_1) and S_2 surrounded by parentheses?
+    - they are not a tuple
+    - \{(S_1(x, f_1(x,y), f(x,y)))\}_{x,y} \compindist \{(\viewrv^{\Pi}_1(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} \\
+- 2pc security definition
+    - check goldreich definition
+    - are f_1 and f supposed to be inputs to simulators???
+    - I say that they only take two inputs before
+    - I think they are supposed to be there, but the parentheses are off
+- Poker example
+- Check CompGC paper on meaning of i in SCMC
+
+
+# Oral Outline
+- Introduction
+    - Millionaire problem
+- Cryptographic Primitives
+    - security parameter
+    - encryption
+    - computational indistinguishability
+    - boolean circuit
+    - oblivious transfer
+- Security and Classical Garbled Circuits
+    - motivation
+        - privacy
+        - correctness
+        - semi-honest
+    - definition
+    - Yao's Garbled Circuit
+        - Steps
+            - Garble
+                - Assign wire labels
+                - Make garbled tables
+            - Communicate
+                - Send garbled tables
+                - Send input wire labels
+            - Evaluate
+                - trial decrypt
+                - acquire output wire label
+                - Uses output wire label
+        - Security
+        - Complexity
+- Improvements to Garbled Circuits
+    - Point and Permute
+    - GRR3
+    - Free XOR
+    - GRR2
+        - skip
+    - FleXOR
+        - board-work if necessary
+    - Half gates
+        - board-work -- walk through paper
+    - Improving OT
+- Component-Based Garbled Circuits + SCMC
+     - Naive
+     - Security (hybrid proof)
+     - SCMC
+- Implementation and Results
+    - CompGC
+    - Experiments
+        - mention why we chose these
+        - aes 
+            - commonly measured
+            - might encrypt output of a function
+        - cbc
+            - had aes working, so not too hard to do
+            - arbitrary size
+        - levenshtein
+            - genomic analysis
+            - dynamic algo so single component
+    - Results
+        - table with load
+        - table no load
+        - naive verse scmc
+
+# Writing TODO
+- there exist(s) in encryption security definition
+- type top page 22:
+    - {view A (x, y)} x,y∈{0,1} ∗ }
+    - extra }
+- 2pc security definition
+    - why are (S_1) and S_2 surrounded by parentheses?
+    - they are not a tuple
+    - \{(S_1(x, f_1(x,y), f(x,y)))\}_{x,y} \compindist \{(\viewrv^{\Pi}_1(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} \\
+- 2pc security definition
+    - check goldreich definition
+    - are f_1 and f supposed to be inputs to simulators???
+    - I say that they only take two inputs before
+    - I think they are supposed to be there, but the parentheses are off
+- GRR3 example is *not* an AND gate.
+
+
