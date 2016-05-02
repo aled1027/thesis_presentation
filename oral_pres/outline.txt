@@ -1,48 +1,38 @@
-
-# Orals TODO
-- figure out if we used FleXOR
-- 2pc security definition
-    - why are (S_1) and S_2 surrounded by parentheses?
-    - they are not a tuple
-    - \{(S_1(x, f_1(x,y), f(x,y)))\}_{x,y} \compindist \{(\viewrv^{\Pi}_1(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} \\
-- 2pc security definition
-    - check goldreich definition
-    - are f_1 and f supposed to be inputs to simulators???
-    - I say that they only take two inputs before
-    - I think they are supposed to be there, but the parentheses are off
-- Poker example
-- Check CompGC paper on meaning of i in SCMC
-
-
-# Oral Outline
-- Introduction
-    - Millionaire problem
-- Cryptographic Primitives
-    - security parameter
-    - encryption
-    - computational indistinguishability
-    - boolean circuit
-    - oblivious transfer
-- Security and Classical Garbled Circuits
-    - motivation
-        - privacy
-        - correctness
-        - semi-honest
-    - definition
-    - Yao's Garbled Circuit
-        - Steps
-            - Garble
-                - Assign wire labels
-                - Make garbled tables
-            - Communicate
-                - Send garbled tables
-                - Send input wire labels
-            - Evaluate
-                - trial decrypt
-                - acquire output wire label
-                - Uses output wire label
-        - Security
-        - Complexity
+# Outline
+- 2PC
+    - general problem: secure computation
+    - we look at two party case, 2PC
+    - what is it?
+        - two parties compute f
+        - millionaire problem
+    - why is it useful?
+        - auction, election, genome analysis, two companies
+    - security
+        - properties
+            - privacy
+            - correctness
+        - setting
+            semi-honest
+        - maybe explain comp indist
+        - maybe explain security parameter
+- Garbled Circuits
+    - primitives
+        - enc
+        - ot
+            - have RSA based if asked
+    - the protocol (have slide)
+        - Garble
+            - Assign wire labels
+            - Make garbled tables
+        - Communicate
+            - Send garbled tables
+            - Send input wire labels
+        - Evaluate
+            - trial decrypt
+            - acquire output wire label
+            - Uses output wire label
+    - mention security
+    - complexity/cost
 - Improvements to Garbled Circuits
     - Point and Permute
     - GRR3
@@ -55,26 +45,46 @@
         - board-work -- walk through paper
     - Improving OT
 - Component-Based Garbled Circuits + SCMC
-     - Naive
-     - Security (hybrid proof)
-     - SCMC
+    - motivating
+        - offline/ online
+        - function chosen ahead of time
+        - no flexibility
+    - Naive linking
+    - SCMC
 - Implementation and Results
-    - CompGC
+    - discuss how code works
+        - C
+        - function specification
     - Experiments
-        - mention why we chose these
         - aes 
             - commonly measured
             - might encrypt output of a function
+            - component: aes round
         - cbc
             - had aes working, so not too hard to do
             - arbitrary size
+            - component: aes round and xor
         - levenshtein
             - genomic analysis
-            - dynamic algo so single component
+            - dynamic algo so single component: levenshtein core
+            - 30 and 60 symbols
+            - 8 bit alphabet
+                - so not DNA, but what lit used
     - Results
         - table with load
         - table no load
         - naive verse scmc
+- future work
+    - malicious setting
+    - mpc - more than two parties
+    - make linking faster
+    - reduce memory footprint
+    - develop library of components
+
+# Orals TODO
+- Poker example
+- Check CompGC paper on meaning of i in SCMC
+- check partial gcs paper
 
 # Writing TODO
 - there exist(s) in encryption security definition

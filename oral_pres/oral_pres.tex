@@ -14,6 +14,14 @@
 
 \input{macros}
 
+\newcommand\Wider[2][3em]{%
+\makebox[\linewidth][c]{%
+  \begin{minipage}{\dimexpr\textwidth+#1\relax}
+  \raggedright#2
+  \end{minipage}%
+  }%
+}
+
 \renewcommand<>{\item}[1]{\only#2{\beameroriginal{\item}{#1}}}
     \mode<presentation> {
         \usetheme{default}
@@ -32,70 +40,8 @@
 
     \begin{document}
 
-    \begin{frame}
-        \titlepage 
-    \end{frame}
-
-    \begin{frame}
-        \frametitle{Overview}
-        \begin{enumerate}
-            \item Cryptographic Primitives
-            \item Security and Classical Garbled Circuits
-            \item Improvements to Garbled Circuits
-            \item Component-Based Garbled Circuits + SCMC
-            \item Implementation and Results
-        \end{enumerate}
-    \end{frame}
-
-    \begin{frame}
-        \frametitle{Introduction}
-            TODO
-    \end{frame}
-
-    \begin{frame}
-        \frametitle{The Millionaire Problem}
-        \begin{itemize}
-            \item Alice and Bob wish to determine who is wealthier.
-            \item They do not want to disclose their wealth to each other.
-                \begin{itemize}
-                    \item Alice has \$$x$, Bob has \$$y$.
-                    \item Alice should not learn anything about $y$.
-                    \item Bob should not learn anything about $x$.
-                \end{itemize}
-        \end{itemize}
-        \begin{equation}
-            f(x,y) = \left\{
-                \begin{array}{ll}
-                    Alice, & \quad y \leq x; \\
-                    Bob, & \quad y > x.
-                \end{array}
-                \right.
-        \end{equation}
-
-            \begin{figure}
-                \centering
-                \includegraphics[scale=0.8]{images/setup}
-            \end{figure}
-            % http://www.alexirpan.com/2016/02/11/secure-computation.html
-    \end{frame}
-
         \begin{frame}
-            \frametitle{Security Parameter}
-            \begin{itemize}
-                \item asdf
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Encryption}
-                \begin{align*}
-                    \label{eqn:encryption}
-                    \begin{split}
-                        \Gen(1^n) & \rightarrow k \\
-                        \Enc_k (pt) & \rightarrow ct  \\
-                        \EncInv_k(ct) & \rightarrow pt
-                    \end{split}
-                \end{align*}
+            \titlepage
         \end{frame}
 
         \begin{frame}
@@ -134,34 +80,6 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Boolean Circuits}
-            \begin{itemize}
-                \item We encode a function $f$ into a circuit $C$.
-                \item Circuit $C$ is made of AND, XOR and NOT gates.
-                \item Each gate has two input wires and a single output wire
-            \end{itemize}
-            \begin{figure}
-                \centering
-                \includegraphics[scale=0.6]{images/less_than}
-            \end{figure}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Oblivious Transfer (OT)}
-            \begin{itemize}
-                \item Alice potentially sends either $m_0$ or $m_1$ to Bob.
-                \item Bob, without seeing $m_0$ or $m_1$, decides that he wants $m_b$.
-                \item Bob receives $m_b$.
-                \item Property 1: Alice does not know which message Bob recieved.
-                \item Property 2: Bob doesn't anything about $m_{1-b}$.
-            \end{itemize}
-
-            \begin{figure}
-                \includegraphics[scale=0.6]{images/ot}
-            \end{figure}
-        \end{frame}
-
-        \begin{frame}
             \frametitle{Oblivious Transfer 2}
             \begin{figure}
                 \centering
@@ -172,103 +90,32 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Setting up Security of 2PC}
-                \begin{itemize}
-                    \item Privacy of inputs
-                        \begin{itemize}
-                            \item Alice and Bob do not learn anything about the each other's input.
-                            \item Except for info that is inferable from $x$ and $f(x,y)$.
-                            \item Bob should not learn that $1,000,000 < x \leq 2,000,000$.
-                            \item But if $y < x$ and $y = 2,000$, then he learns $x < 2,000$.
-                        \end{itemize}
-                    \item Correctness
-                        \begin{itemize}
-                            \item Alice and Bob receive $f(x,y)$.
-                            \item As opposed to some value near $f(x,y)$.
-                            \item Or not receiving a value at all
-                        \end{itemize}
-                \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Semi-Honest}
-            \begin{itemize}
-                \item We assume that each party obeys the protocol, but attemps to learn extra information from its interactions
-                \item In contrast, Alice and Bob could lie, deceive, not send some messages, etc. 
-                    \begin{itemize}
-                        \item This is called the malicious setting
-                    \end{itemize}
-                \item Reasons we use the semi-honest setting
-                    \begin{itemize}
-                        \item It's easier
-                        \item Some realistic scenarios (e.g, hosptitals)
-                        \item \JustGarble\,\,is written for semi-honest setting
-                    \end{itemize}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
             \frametitle{Security of 2PC (Overview)}
             \begin{figure}
                 \centering
                 \includegraphics[scale=0.25]{images/security}
             \end{figure}
-            A secure computation protocol is secure if Alice and Bob learn the same information in the real world as they would in ideal world.
         \end{frame}
 
         \begin{frame}
             \frametitle{Security of 2PC (Ideal World)}
-            \begin{itemize}
-                \item We use computational indistinguishability
-                \item Model information that Alice and Bob can infer in real and ideal world
-                \item Simulators: adversaries in the real world
-                    \begin{itemize}
-                        \item We have $\sim_A$ and $\sim_B$
-                        \item Take as input $x$ and $f(x,y)$.
-                    \end{itemize}
-                \item So our \textit{distribution ensembles} of information in the ideal world are
-                    \begin{align*}
-                        \{\sim_A(x, f(x,y)\}_{x \in \{0,1\}^*} \text{ and }
-                        \{\sim_B(y, f(x,y)\}_{y \in \{0,1\}^*}
-                    \end{align*}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Security of 2PC (Real World)}
-            \begin{itemize}
-                \item In the real world, we introduce $\viewrv_A(x, y)$ and $\viewrv_B(x, y)$.
-                \item Think of $\viewrv_A(x,y)$ as the set of all messages that Alice sends and receives during the execution of the protocol.
-                \item We construction distribution ensembles as
-                    \begin{align*}
-                        & \{\viewrv_A(x, y)\}_{x, y \in \{0,1\}^*} \\
-                        & \{\viewrv_B(x, y)\}_{x, y \in \{0,1\}^*} 
-                    \end{align*}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Security of 2PC (Real World)}
-            \begin{itemize}
-                \item Define $output^{\Pi}_i(n,x,y)$ as the output of the $i$th party on input $(x,y)$ and security parameter $n$.
-                \item Then $\Pi$ is secure if 
-                    \begin{align*}
-                        & \{S_A(x, f_A(x,y), f(x,y))\}_{x,y} \compindist \{(\viewrv^{\Pi}_A(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} \\
-                        & \{S_B(x, f_B(x,y), f(x,y))\}_{x,y} \compindist \{(\viewrv^{\Pi}_B(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} 
-                    \end{align*}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Garbled Circuits}
-            \centering
-            \includegraphics[scale=0.8]{images/high_level}
-            %\input{figure-gc-highlevel}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Garbled Circuits}
-            \input{figure-labeled-circuit}
+                Define the following:
+                \begin{align*}
+                    \{\sim_A(x, f(x,y)\}_{x \in \{0,1\}^*} \\
+                    \{\sim_B(y, f(x,y)\}_{y \in \{0,1\}^*}
+                \end{align*}
+                \begin{align*}
+                    & \{\viewrv_A(x, y)\}_{x, y \in \{0,1\}^*} \\
+                    & \{\viewrv_B(x, y)\}_{x, y \in \{0,1\}^*} 
+                \end{align*}
+                \begin{align*}
+                    output^{\Pi}_i(n,x,y)
+                \end{align*}
+                Then $\Pi$ is secure if:
+                \begin{align*}
+                    & \{(S_A(x, f_A(x,y)), f(x,y))\}_{x,y} \compindist \{(\viewrv^{\Pi}_A(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} \\
+                    & \{(S_B(x, f_B(x,y)), f(x,y))\}_{x,y} \compindist \{(\viewrv^{\Pi}_B(x,y), \outputrv^{\Pi}(x,y)) \}_{x,y} 
+                \end{align*}
         \end{frame}
 
         \begin{frame}
@@ -290,42 +137,6 @@
                 \item Bob uses output wire label in subsequent gates
                 \item Bob eventually acquires output wire labels
             \end{enumerate}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Security of Garbled Circuits}
-            \begin{itemize}
-                \item Alice only receives messages from Bob during OT
-                    \begin{itemize}
-                        \item We assume OT is secure, so Alice does not learn any information
-                    \end{itemize}
-                \item Bob recieves the following:
-                    \begin{itemize}
-                        \item Input wire labels
-                        \item OT messages
-                        \item Garbled tables
-                    \end{itemize}
-                \item Bob can only decrypt a gate if he has two wire labels
-                \item Bob can only acquire two wire labels per gate with this information
-                \item Hence Bob cannot learn any extra information
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{The Cost of Garbled circuits}
-            \begin{itemize}
-                \item Alice sends $4$ ciphertexts per gate, since the garbled table has $4$ rows, to Bob.
-                    \begin{itemize}
-                        \item This is the bandwidth, or the amount of the communication required.
-                        \item Based on empirical work, bandwidth is the biggest bottleneck in garbled circuits.
-                        \item So reducing the size of the garbled table is of utmost priority.
-                    \end{itemize}
-                \item Alice performs $4$ encryptions.
-                \item Bob performs on average $2.5$ decryptions 
-                    \begin{itemize}
-                        \item Since garbled table has $4$ rows
-                    \end{itemize}
-            \end{itemize}
         \end{frame}
 
         \begin{frame}
@@ -406,30 +217,21 @@
             \begin{itemize}
                     \small
                 \item Let $\Delta \gets \{0,1\}^n$ be fixed globally in a circuit.
-                \item For each input wire $A$, sample a single ciphertext; call it $A$.
+                \item For each input wire:
                     \begin{itemize}
-                            \footnotesize
-                        \item The \textit{zeroith} wire label is $A$.
-                        \item The \textit{first} wire label is $A \oplus \Delta$.
+                        \item Sample $W_i^0$ randomly.
+                        \item Set $W_i^1 \gets W_i^0 \oplus \Delta$.
                     \end{itemize}
-                \item Set output wire $C$ of a gate to be $A \oplus B$.
+                \item For each output wire of a gate $W_k$
                     \begin{itemize}
-                            \footnotesize
-                        \item The xor of its input wires.
+                        \item Set $W_k^0 \gets W_i^0 \oplus W_j^0$.
+                        \item Set $W_k^1 \gets W_k^0 \oplus \Delta$.
                     \end{itemize}
                 \item Bob \textit{evaluates} the XOR gate by XORing the two input labels.
                     \begin{align*}
                         (A \oplus a\Delta) \oplus (B \oplus b\Delta) = A \oplus B \oplus (a \oplus b)\Delta
                     \end{align*}
                 \item So XOR gates do not require a garbled table, aka they're Free.
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Others}
-            \begin{itemize}
-                \item FleXOR
-                \item Half-gates
             \end{itemize}
         \end{frame}
 
@@ -456,25 +258,6 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{The basics of Component-Based GCs}
-            \begin{itemize}
-                \item Observe that many useful functions are composed of standard components
-                \item Component-based garbled circuits garble and send a \textit{library} of components during offline phase
-                \item Link or stitch together components during online phase to build the function
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Example uses of Component-Based GCs}
-            \begin{itemize}
-                \item Bank ATM
-                \item Online poker
-                \item Election or auction
-            \end{itemize}
-        \end{frame}
-
-
-        \begin{frame}
             \frametitle{Details of Component-Based Garbled Circuits (1)}
                 \begin{figure}
                     \input{figure-chaining}
@@ -485,55 +268,9 @@
             \frametitle{Details of Component-Based GCs (2)}
                 \begin{figure}
                     \input{figure-chaining2}
-                    
+
                 \end{figure}
         \end{frame}
-
-        \begin{frame}
-            \frametitle{Efficiency of chaining garbled circuits}
-            \begin{itemize}
-                \item In online phase, chaining requires communicating a ciphertext per chain
-                \item This can be a lot of communication
-                    \begin{itemize}
-                        \item Suppose $100$ by $100$ matrix with entries of max value $2^8$
-                        \item Then requires $8,000$ ciphertexts
-                        \item That's $256$ kBs.
-                    \end{itemize}
-                \item I came up with a method to reduce this to a single ciphertext per data object
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Security of Component-Based GCs}
-            \begin{itemize}
-                \item We think through security using a \textit{hybrid} argument.
-                    \begin{itemize}
-                        \item Rely on fact that computational indistinguishability is transitive
-                        \item By stripping away information from the real world, we slowly transform it into the ideal world.
-                    \end{itemize}
-                \item We remove:
-                    \begin{itemize}
-                        \item Link labels
-                        \item Input wire labels
-                        \item Garbled tables
-                        \item Output map
-                    \end{itemize}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Single Communication Multiple Connections SCMC}
-            \begin{itemize}
-                \item Problem: number of ciphertexts communicated scales linearly with the number of chains
-                \item Key observation: 
-                    \begin{itemize}
-                        \item the chaining is predictable, consecutive wires are chained to consecutive wires
-                        \item Pieces of data move around in a function, like matrices or numbers or text
-                    \end{itemize}
-                \item Solution: give consecutive wire labels a predictable pattern
-            \end{itemize}
-        \end{frame}
-
 
         \begin{frame}
             \frametitle{Single Communcation Multiple Connections SCMC}
@@ -586,51 +323,10 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Security of SCMC}
-            \begin{itemize}
-                \item SCMC security follows from naive component-based garbled circuits security
-                \item Link labels are find to send
-                \item And wire labels are \textit{pseudorandom} since $H$ is a random oracle
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Implementation}
-            \begin{itemize}
-                \item I implemented component-based GCs and SCMC in a program called \CompGC
-                \item Written in C
-                \item It does the entire garbled circuits protocol
-                \item Takes circuits and inputs and securely computes the output
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Some code}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{The experiments}
-            \begin{itemize}
-                \item AES Encryption 
-                    \begin{itemize}
-                        \item AES-round was only component
-                    \end{itemize}
-                \item CBC Mode of Operation
-                    \begin{itemize}
-                        \item A method for encrypting arbitrary size messages
-                        \item XOR and AES-round were components
-                    \end{itemize}
-                \item Levensthein Distance Algorithm 
-                    \begin{itemize}
-                        \item Used $8$-bit alphabet
-                        \item Ran 30 symbols and 60 symbols
-                    \end{itemize}
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
             \frametitle{Results}
-            \input{table-results}
+            \Wider[4em]{
+                \input{table-results}
+            }
         \end{frame}
 
         \begin{frame}
@@ -641,20 +337,6 @@
         \begin{frame}
             \frametitle{Comparing Naive to SCMC}
             \input{table-scmc}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Future work}
-            \begin{itemize}
-                \item Malicious setting
-                \item MPC - more than two parties
-                    \begin{itemize}
-                        \item Then we can do auctions and elections with arbitrarily many parties
-                    \end{itemize}
-                \item Make linking faster
-                \item Reduce memory footprint
-                \item Develop a library of components
-            \end{itemize}
         \end{frame}
 
     \end{document} 
