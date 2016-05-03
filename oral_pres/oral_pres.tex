@@ -62,15 +62,8 @@
 
         \begin{frame}
             \frametitle{Computational Indistinguishability}
-            Intuition: 
             \begin{itemize}
-                \item Let $\mathcal{X}$ and $\mathcal{Y}$ be distribution ensembles.
-                \item Give an adversary one of the distribution ensembles.
-                \item Can the adversary sample from the distribution a polynomial number of times to determine which distribution they were given?
-            \end{itemize}
-
-            Formal Definition:
-            \begin{itemize}
+                \item Let $n$ be security parameter.
                 \item Let $\mathcal{X} = \{X_n\}_{n \in \NN}$ and $\mathcal{Y} = \{Y_n\}_{n \in \NN}$ be distribution ensembles.
                 \item Then $\mathcal{X}$ and $\mathcal{Y}$ are computationally indistinguishable, denoted $\mathcal{X} \compindist \mathcal{Y}$, if for all probabilistic polynomial-time algorithms $D$, there exists a negligible function $\mu$ such that:
                     \begin{align*}
@@ -98,7 +91,7 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Security of 2PC (Ideal World)}
+            \frametitle{Security of 2PC}
                 Define the following:
                 \begin{align*}
                     \{\sim_A(x, f(x,y)\}_{x \in \{0,1\}^*} \\
@@ -122,7 +115,7 @@
             \frametitle{Garbled Circuits}
             \begin{enumerate}
                 \item Alice assigns wire labels
-                \item Alice make garbled tables
+                \item Alice makes garbled tables
                     \begin{itemize}
                         \item Alice permutes rows
                     \end{itemize}
@@ -246,26 +239,7 @@
         \end{frame}
 
         \begin{frame}
-            \frametitle{Motivating Component-Based GCs}
-            \begin{itemize}
-                \item Split protocols into offline/online 
-                    \begin{itemize}
-                        \item Garble and send circuit in offline phase.
-                        \item Determine inputs during online phase, evaluate.
-                    \end{itemize}
-                \item Problem: function chosen ahead of time - no flexiblity
-            \end{itemize}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Details of Component-Based Garbled Circuits (1)}
-                \begin{figure}
-                    \input{figure-chaining}
-                \end{figure}
-        \end{frame}
-
-        \begin{frame}
-            \frametitle{Details of Component-Based GCs (2)}
+            \frametitle{Component-Based Garbled Circuits}
                 \begin{figure}
                     \input{figure-chaining2}
 
@@ -277,8 +251,9 @@
             % http://tex.stackexchange.com/questions/201071/how-do-i-make-tikz-circular-arrowheads-concentric-to-the-point-they-connect
             \begin{itemize}
                 \item For each piece of data, sample a label $A$.
-                \item Set $i$th wire label of data to $A \oplus H(i)$.
+                \item Set $i$th wire label of data to $A \oplus H(T \oplus i)$.
                 \item Where $H$ is a hash function
+                \item The link for all wires in the piece of data is $A \oplus B$.
             \end{itemize}
 
             \begin{figure}
@@ -290,23 +265,23 @@
 
                     \node[empty] (0a) at (0,0.5)     {};
                     \node[empty] (0b) at (0,-0.5)     {};
-                    \node[square] (0c) at (0,0)     {$\GC_0$};
+                    \node[square] (0c) at (0,0)     {$c_0$};
 
-                    \node (mida) at (3.5cm,0.5)     {};
-                    \node (midb) at (3.5cm,-0.5)     {};
-                    \node (midc) at (3.5cm,0)     {};
+                    \node (mida) at (4.5cm,0.5)     {};
+                    \node (midb) at (4.5cm,-0.5)     {};
+                    \node (midc) at (4.5cm,0)     {};
 
-                    \node[empty] (1a) at (7cm,0.5)   {};
-                    \node[empty] (1b) at (7cm,-0.5)   {};
-                    \node[square] (1c) at (7cm,0)   {$\GC_1$};
+                    \node[empty] (1a) at (9cm,0.5)   {};
+                    \node[empty] (1b) at (9cm,-0.5)   {};
+                    \node[square] (1c) at (9cm,0)   {$c_1$};
 
-                    \node (x0) at (1.85cm,0.7) {$A \oplus H(1)$};
-                    \node (y0) at (1.85cm,-0.3) {$A \oplus H(3)$};
-                    \node (z0) at (1.85cm,0.2) {$A \oplus H(2)$};
+                    \node (x0) at (2.5cm,0.7) {$A \oplus H(T \oplus 1)$};
+                    \node (y0) at (2.5cm,-0.3) {$A \oplus H(T \oplus 3)$};
+                    \node (z0) at (2.5cm,0.2) {$A \oplus H(T \oplus 2)$};
 
-                    \node (x1) at (4.85cm,0.7) {$B \oplus H(1)$};
-                    \node (y1) at (4.85cm,-0.3) {$B \oplus H(3)$};
-                    \node (z1) at (4.85cm,0.2) {$B \oplus H(2)$};
+                    \node (x1) at (6.1cm,0.7) {$B \oplus H(T \oplus 1)$};
+                    \node (y1) at (6.1cm,-0.3) {$B \oplus H(T \oplus 3)$};
+                    \node (z1) at (6.1cm,0.2) {$B \oplus H(T \oplus 2)$};
 
                     \draw [-latex] (0a.east) -- (mida);
                     \draw [-latex] (0b.east) -- (midb);
@@ -317,9 +292,16 @@
                     \draw [-latex] (midc) -- (1c.west);
                 \end{tikzpicture}
             \end{figure}
-            \begin{itemize}
-                \item Technically, we set the links to $A \oplus H (T \oplus (i || b))$
-            \end{itemize}
+
+        \end{frame}
+
+        \begin{frame}
+            \frametitle{Results}
+            \begin{figure}
+                \centering
+                \includegraphics[scale=1.4]{images/aes_round}
+            \end{figure}
+            %Source http://www.ecs.umass.edu/ece/koren/FaultTolerantSystems/simulator/AES-L/round.jpg
         \end{frame}
 
         \begin{frame}

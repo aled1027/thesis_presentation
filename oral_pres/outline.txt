@@ -45,6 +45,20 @@
         - board-work -- walk through paper
     - Improving OT
 - Component-Based Garbled Circuits + SCMC
+    - history
+        - partial garbled circuits
+             - retaining state to prevent needless reprocessing
+             - they work in semi-honest and malicious (adds extra steps)
+             - method
+                - transform W_i^0 and W_i^1 into W_j^0 and W_j^1
+                - they send W_i^0 \oplus W_j^0 and W_i^1 \oplus W_j^1 with point and permute
+                - xor as indicated by PP select bit. 
+                - this generates valid input wire label
+             - built friend-finder
+                - friends send their location to server
+                - say which "grid" they are in
+                - server computes which friends are near each other (think set intersection with bitwise thing)
+                - a friend moves, and server recomputes who is near each other without getting locations from friends who didn't move
     - motivating
         - offline/ online
         - function chosen ahead of time
